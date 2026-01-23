@@ -40,6 +40,7 @@ export const ImageDetails = ({
                         src={image.publicId}
                         alt={image.title}
                         {...image.config}
+                        placeholder="empty"
                         className="object-contain h-full w-full"
                         sizes="100vw"
                     />
@@ -47,12 +48,12 @@ export const ImageDetails = ({
 
                 <div className="p-6 pt-2 space-y-4">
                     <div className="flex-between">
-                        <h3 className="h3-bold text-dark-600">{image.title}</h3>
+                        <DialogTitle className="h3-bold text-dark-600">{image.title}</DialogTitle>
                         <div className="flex gap-2">
                             <Button
                                 size="icon"
                                 variant="ghost"
-                                className="rounded-full bg-purple-100 text-purple-500 hover:bg-purple-200"
+                                className="rounded-full bg-crimson-50 text-crimson-500 hover:bg-crimson-100"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     download(image.secureURL, image.title);
@@ -63,7 +64,7 @@ export const ImageDetails = ({
                             <Button
                                 size="icon"
                                 variant="ghost"
-                                className="rounded-full bg-purple-100 text-purple-500 hover:bg-purple-200"
+                                className="rounded-full bg-crimson-50 text-crimson-500 hover:bg-crimson-100"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     copyToClipboard(`${window.location.origin}/transformations/${image._id}`)
@@ -91,7 +92,7 @@ export const ImageDetails = ({
 
                     <Button
                         asChild
-                        className="w-full rounded-full bg-purple-gradient bg-cover text-white"
+                        className="w-full rounded-full bg-crimson-gradient bg-cover text-white shadow-lg shadow-crimson-200/50"
                     >
                         <a href={`/transformations/${image._id}`}>
                             Edit / View Details

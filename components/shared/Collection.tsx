@@ -106,6 +106,7 @@ const Card = ({ image }: { image: IImage }) => {
             height={image.height}
             {...image.config}
             loading="lazy"
+            placeholder="empty"
             className="h-52 w-full rounded-[10px] object-cover transition-all hover:scale-105"
             sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
           />

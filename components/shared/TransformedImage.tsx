@@ -26,32 +26,32 @@ const TransformedImage = ({ image, type, title, transformationConfig, isTransfor
         </h3>
 
         {hasDownload && (
-          <button 
-  type="button" 
-  className="download-btn" 
-  onClick={downloadHandler} 
-  aria-label={`Download ${title}`}
->
-  <Image 
-    src="/assets/icons/download.svg"
-    alt="" // empty alt because aria-label covers it
-    width={24}
-    height={24}
-    className="pb-[6px]"
-  />
-</button>
-)}
+          <button
+            type="button"
+            className="download-btn"
+            onClick={downloadHandler}
+            aria-label={`Download ${title}`}
+          >
+            <Image
+              src="/assets/icons/download.svg"
+              alt="" // empty alt because aria-label covers it
+              width={24}
+              height={24}
+              className="pb-[6px]"
+            />
+          </button>
+        )}
       </div>
 
       {image?.publicId && transformationConfig ? (
         <div className="relative">
-          <CldImage 
+          <CldImage
             width={getImageSize(type, image, "width")}
             height={getImageSize(type, image, "height")}
             src={image?.publicId}
             alt={image?.title || title || 'Transformed image'}
             sizes={"(max-width: 767px) 100vw, 50vw"}
-            placeholder={dataUrl as PlaceholderValue}
+            placeholder="empty"
             className="transformed-image"
             onLoad={() => {
               setIsTransforming && setIsTransforming(false);
@@ -66,7 +66,7 @@ const TransformedImage = ({ image, type, title, transformationConfig, isTransfor
 
           {isTransforming && (
             <div className="transforming-loader">
-              <Image 
+              <Image
                 src="/assets/icons/spinner.svg"
                 width={50}
                 height={50}
@@ -76,7 +76,7 @@ const TransformedImage = ({ image, type, title, transformationConfig, isTransfor
             </div>
           )}
         </div>
-      ): (
+      ) : (
         <div className="transformed-placeholder">
           Transformed Image
         </div>
