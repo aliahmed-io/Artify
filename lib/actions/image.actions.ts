@@ -35,12 +35,12 @@ function sanitizeQuery(raw: string | undefined, maxLen = 120) {
 
 /**
  * Build a safe Cloudinary search expression targeting fields we care about.
- * Example: folder="imaginify" AND (public_id:*cat* OR filename:*cat* OR tags:cat)
+ * Example: folder=\"artify\" AND (public_id:*cat* OR filename:*cat* OR tags:cat)
  */
 function buildCloudinaryExpression(folder: string, q: string) {
   if (!q) return `folder="${folder}"`;
   const escaped = q.replace(/"/g, "").replace(/\s+/g, " ").trim();
-  
+
   // Since assets don't have tags or context metadata, we'll focus on public_id matching
   // For now, we'll return all assets in the folder and let the database handle the filtering
   // This is more reliable than trying to use Cloudinary's limited search capabilities
@@ -180,7 +180,7 @@ export async function getAllImages({
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
     const apiKey = process.env.CLOUDINARY_API_KEY;
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
-    
+
     // Check if Cloudinary credentials are configured
     if (!cloudName || !apiKey || !apiSecret) {
       console.warn("Cloudinary credentials not configured. Falling back to database search only.");
@@ -210,7 +210,7 @@ export async function getAllImages({
         savedImages,
       };
     }
-    
+
     cloudinary.config({
       cloud_name: cloudName,
       api_key: apiKey,
@@ -240,12 +240,12 @@ export async function getAllImages({
     // Since Cloudinary assets don't have searchable metadata (tags/context),
     // we'll do database-based search instead of Cloudinary search
     const skipAmount = (Number(page) - 1) * limit;
-    
+
     // Create enhanced search query for database with multiple search strategies
     const sanitizedQuery = sanitizeQuery(searchQuery);
     const searchRegex = new RegExp(sanitizedQuery, 'i');
     const wordRegex = new RegExp(`\\b${sanitizedQuery}\\b`, 'i');
-    
+
     // Handle common transformation type searches with fuzzy matching
     const transformationTypeMap: { [key: string]: string[] } = {
       'fill': ['fill', 'background'],
@@ -262,7 +262,7 @@ export async function getAllImages({
       'oil': ['oilPaint', 'oil', 'painting'],
       'cartoon': ['cartoonify', 'cartoon', 'anime'],
     };
-    
+
     // Add transformation type variations to search
     const transformationVariations: string[] = [];
     const queryLower = sanitizedQuery.toLowerCase();
@@ -271,7 +271,7 @@ export async function getAllImages({
         transformationVariations.push(...variations);
       }
     }
-    
+
     // Handle common misspellings and synonyms
     const commonMisspellings: { [key: string]: string[] } = {
       'remove': ['remvoe', 'remve', 'rmove', 'remov', 'delete'],
@@ -282,7 +282,7 @@ export async function getAllImages({
       'blur': ['blr', 'blure'],
       'sharpen': ['sharpen', 'sharpn'],
     };
-    
+
     const searchVariations: string[] = [];
     for (const [correct, misspellings] of Object.entries(commonMisspellings)) {
       if (queryLower.includes(correct)) {
@@ -291,7 +291,7 @@ export async function getAllImages({
         searchVariations.push(correct);
       }
     }
-    
+
     // Build comprehensive search filter
     const searchFilterConditions = [
       // Exact matches (highest priority)
@@ -300,7 +300,7 @@ export async function getAllImages({
       { prompt: wordRegex },
       { aspectRatio: wordRegex },
       { color: wordRegex },
-      
+
       // Partial matches (lower priority)
       { title: searchRegex },
       { transformationType: searchRegex },
@@ -308,9 +308,9 @@ export async function getAllImages({
       { aspectRatio: searchRegex },
       { color: searchRegex },
       { publicId: searchRegex },
-      
+
       // Author name search
-      { 
+      {
         $expr: {
           $or: [
             { $regexMatch: { input: "$author.firstName", regex: searchRegex } },
@@ -319,7 +319,7 @@ export async function getAllImages({
         }
       }
     ];
-    
+
     // Add transformation type variations if any found
     if (transformationVariations.length > 0) {
       transformationVariations.forEach(variation => {
@@ -328,7 +328,7 @@ export async function getAllImages({
         });
       });
     }
-    
+
     // Add search variations for misspellings/synonyms
     if (searchVariations.length > 0) {
       searchVariations.forEach(variation => {
@@ -339,19 +339,19 @@ export async function getAllImages({
         );
       });
     }
-    
+
     const searchFilter = {
       $or: searchFilterConditions
     };
 
     // Get all matching images first (without pagination for scoring)
     const allMatchingImages = await populateUser(Image.find(searchFilter)).lean();
-    
+
     // Score and sort results for better relevance
     const scoredImages = allMatchingImages.map((image: any) => {
       let score = 0;
       const query = sanitizedQuery.toLowerCase();
-      
+
       // Title matches get highest score
       if (image.title) {
         const titleLower = image.title.toLowerCase();
@@ -359,7 +359,7 @@ export async function getAllImages({
         else if (titleLower.includes(query)) score += 50; // Partial match
         else if (titleLower.split(' ').some((word: string) => word.startsWith(query))) score += 25; // Word start
       }
-      
+
       // Transformation type matches
       if (image.transformationType) {
         const typeLower = image.transformationType.toLowerCase();
@@ -369,47 +369,47 @@ export async function getAllImages({
           score += 35; // Fuzzy match for transformation variations
         }
       }
-      
+
       // Prompt matches
       if (image.prompt) {
         const promptLower = image.prompt.toLowerCase();
         if (promptLower.includes(query)) score += 30;
       }
-      
+
       // Color matches
       if (image.color) {
         const colorLower = image.color.toLowerCase();
         if (colorLower.includes(query)) score += 20;
       }
-      
+
       // Aspect ratio matches
       if (image.aspectRatio) {
         const aspectLower = image.aspectRatio.toLowerCase();
         if (aspectLower.includes(query)) score += 15;
       }
-      
+
       // Author name matches
       if (image.author) {
         const firstName = image.author.firstName?.toLowerCase() || '';
         const lastName = image.author.lastName?.toLowerCase() || '';
         if (firstName.includes(query) || lastName.includes(query)) score += 35;
       }
-      
+
       return { ...image, _score: score };
     });
-    
+
     // Sort by score (descending) then by updatedAt (descending)
     scoredImages.sort((a: any, b: any) => {
       if (b._score !== a._score) return b._score - a._score;
       return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     });
-    
+
     // Apply pagination to sorted results
     const paginatedImages = scoredImages.slice(skipAmount, skipAmount + limit);
-    
+
     // Remove score from final results
     const finalImages = paginatedImages.map(({ _score, ...image }: any) => image);
-    
+
     const totalImages = scoredImages.length;
     const savedImages = await Image.find().countDocuments();
 

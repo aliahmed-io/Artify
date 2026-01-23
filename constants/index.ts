@@ -30,6 +30,21 @@ export const navLinks = [
     icon: "/assets/icons/camera.svg",
   },
   {
+    label: "Image Generation",
+    route: "/transformations/add/generation",
+    icon: "/assets/icons/stars.svg",
+  },
+  {
+    label: "Video Generation",
+    route: "/transformations/add/video",
+    icon: "/assets/icons/stars.svg",
+  },
+  {
+    label: "Image Upscaling",
+    route: "/transformations/add/upscale",
+    icon: "/assets/icons/scan.svg",
+  },
+  {
     label: "Profile",
     route: "/profile",
     icon: "/assets/icons/profile.svg",
@@ -158,6 +173,27 @@ export const transformationTypes = {
       recolor: { prompt: "", to: "", multiple: true },
     },
     icon: "filter.svg",
+  },
+  generation: {
+    type: "generation",
+    title: "AI Image Generation",
+    subTitle: "Generate stunning images from text using Google Gemini",
+    config: { generation: true },
+    icon: "stars.svg",
+  },
+  video: {
+    type: "video",
+    title: "AI Video Generation",
+    subTitle: "Generate videos from text using Google Gemini",
+    config: { video: true },
+    icon: "stars.svg",
+  },
+  upscale: {
+    type: "upscale",
+    title: "Image Upscaling",
+    subTitle: "Upscale and enhance image resolution",
+    config: { upscale: true },
+    icon: "scan.svg",
   },
 };
 

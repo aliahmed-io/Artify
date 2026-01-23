@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { CldImage } from "next-cloudinary";
@@ -11,13 +10,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { transformationTypes } from "@/constants";
 import { IImage } from "@/lib/database/models/image.model";
 import { formUrlQuery } from "@/lib/utils";
 
 import { Button } from "../ui/button";
 
 import { Search } from "./Search";
+import { ImageDetails } from "./ImageDetails";
 
 export const Collection = ({
   hasSearch = false,
@@ -49,7 +48,7 @@ export const Collection = ({
   return (
     <>
       <div className="collection-heading">
-        <h2 className="h2-bold text-dark-600">Recent Edits</h2>
+        <h2 className="h2-bold text-dark-600">History</h2>
         {hasSearch && <Search />}
       </div>
 
@@ -57,7 +56,7 @@ export const Collection = ({
         <ul className="collection-list">
           {images.map((image) => (
             <Card image={image} key={image._id as string} />
-           ))}
+          ))}
 
         </ul>
       ) : (
@@ -82,7 +81,7 @@ export const Collection = ({
             </p>
 
             <Button
-              className="button w-32 bg-purple-gradient bg-cover text-white"
+              className="button w-32 bg-crimson-gradient bg-cover text-white"
               onClick={() => onPageChange("next")}
               disabled={Number(page) >= totalPages}
             >
@@ -98,33 +97,40 @@ export const Collection = ({
 const Card = ({ image }: { image: IImage }) => {
   return (
     <li>
-      <Link href={`/transformations/${image._id}`} className="collection-card">
-        <CldImage
-          src={image.publicId}
-          alt={image.title}
-          width={image.width}
-          height={image.height}
-          {...image.config}
-          loading="lazy"
-          className="h-52 w-full rounded-[10px] object-cover"
-          sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
-        />
+      <div className="collection-card">
+        <ImageDetails image={image} className="cursor-pointer">
+          <CldImage
+            src={image.publicId}
+            alt={image.title}
+            width={image.width}
+            height={image.height}
+            {...image.config}
+            loading="lazy"
+            className="h-52 w-full rounded-[10px] object-cover transition-all hover:scale-105"
+            sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 33vw"
+          />
+        </ImageDetails>
         <div className="flex-between">
           <p className="p-20-semibold mr-3 line-clamp-1 text-dark-600">
             {image.title}
           </p>
-          <Image
-            src={`/assets/icons/${
-              transformationTypes[
-                image.transformationType as TransformationTypeKey
-              ].icon
-            }`}
-            alt={image.title}
-            width={24}
-            height={24}
-          />
+          <span className="text-xs font-medium text-dark-400 bg-dark-700/10 px-2 py-1 rounded-md whitespace-nowrap">
+            {(() => {
+              const labels: Record<string, string> = {
+                restore: "Restore",
+                removeBackground: "Remove BG",
+                fill: "Fill",
+                remove: "Remove",
+                recolor: "Recolor",
+                generation: "Generated",
+                video: "Video",
+                upscale: "Upscale",
+              };
+              return labels[image.transformationType] || image.transformationType;
+            })()}
+          </span>
         </div>
-      </Link>
+      </div>
     </li>
   );
 };

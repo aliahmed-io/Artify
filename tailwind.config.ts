@@ -26,18 +26,18 @@ const config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        purple: {
-          100: "#F4F7FE",
-          200: "#BCB6FF",
-          400: "#868CFF",
-          500: "#7857FF",
-          600: "#4318FF",
+        crimson: {
+          100: "#FFF1F2",
+          200: "#FECDD3",
+          400: "#FB7185",
+          500: "#F43F5E",
+          600: "#E11D48",
         },
         dark: {
-          400: "#7986AC",
-          500: "#606C80",
-          600: "#2B3674",
-          700: "#384262",
+          400: "#6B7280",
+          500: "#4B5563",
+          600: "#1F2937",
+          700: "#111827",
         },
         primary: {
           DEFAULT: "hsl(var(--primary))",
@@ -72,7 +72,7 @@ const config = {
         IBMPlex: ["var(--font-ibm-plex)"],
       },
       backgroundImage: {
-        "purple-gradient": "url('/assets/images/gradient-bg.svg')",
+        "crimson-gradient": "url('/assets/images/gradient-bg.svg')",
         banner: "url('/assets/images/banner-bg.png')",
       },
       borderRadius: {

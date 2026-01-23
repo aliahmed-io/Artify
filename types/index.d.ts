@@ -72,6 +72,9 @@ declare type Transformations = {
     multiple?: boolean;
   };
   removeBackground?: boolean;
+  generation?: boolean;
+  video?: boolean;
+  upscale?: boolean;
 };
 
 // ====== TRANSACTION PARAMS
@@ -96,7 +99,10 @@ declare type TransformationTypeKey =
   | "fill"
   | "remove"
   | "recolor"
-  | "removeBackground";
+  | "removeBackground"
+  | "generation"
+  | "video"
+  | "upscale";
 
 // ====== URL QUERY PARAMS
 declare type FormUrlQueryParams = {
