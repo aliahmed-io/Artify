@@ -75,6 +75,7 @@ declare type Transformations = {
   generation?: boolean;
   video?: boolean;
   upscale?: boolean;
+  rawTransformations?: string[];
 };
 
 // ====== TRANSACTION PARAMS

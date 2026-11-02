@@ -30,7 +30,7 @@ export const debounce = (func: (...args: any[]) => void, delay: number) => {
   let timeoutId: NodeJS.Timeout | null;
   return (...args: any[]) => {
     if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func.apply(null, args), delay);
+    timeoutId = setTimeout(() => func(...args), delay);
   };
 };
 
@@ -57,7 +57,7 @@ export type AspectRatioKey = keyof typeof aspectRatioOptions;
 // PLACEHOLDER FOR DEEP MERGE OBJECTS - Re-adding existing function if overwrite happens
 export const deepMergeObjects = (obj1: any, obj2: any) => {
   if (obj1 === null || obj1 === undefined || obj2 === null || obj2 === undefined) {
-    return obj2;
+    return obj1 ?? obj2;
   }
 
   const output = { ...obj2 };

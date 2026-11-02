@@ -31,7 +31,7 @@ import MediaUploader from "./MediaUploader"
 import TransformedImage from "./TransformedImage"
 
 export const formSchema = z.object({
-  title: z.string(),
+  title: z.string().trim().min(1, "Give your image a title"),
   aspectRatio: z.string().optional(),
   color: z.string().optional(),
   prompt: z.string().optional(),
@@ -163,21 +163,18 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
   }
 
   const onTransformHandler = async () => {
-    setIsTransforming(true)
-
-    setTransformationConfig(
-      deepMergeObjects(newTransformation, transformationConfig)
-    )
-
-    setNewTransformation(null)
-
-    startTransition(async () => {
-      await updateCredits(userId, creditFee)
-    })
+    setIsTransforming(true);
+    try {
+      await updateCredits(userId, creditFee);
+      setTransformationConfig(deepMergeObjects(newTransformation, transformationConfig));
+      setNewTransformation(null);
+    } catch {
+      setIsTransforming(false);
+      toast.error('The transformation could not start. Check your credits and try again.');
+    }
   }
-
   useEffect(() => {
-    if (image && (type === 'restore' || type === 'removeBackground')) {
+    if (image && (type === 'restore' || type === 'removeBackground' || type === 'upscale')) {
       setNewTransformation(transformationType.config)
     }
   }, [image, transformationType.config, type])
@@ -284,6 +281,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
 
           <TransformedImage
             image={image}
+            hasDownload={true}
             type={type}
             title={form.getValues().title}
             isTransforming={isTransforming}
@@ -296,7 +294,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
           <Button
             type="button"
             className="submit-button capitalize"
-            disabled={isTransforming || newTransformation === null}
+            disabled={isTransforming || newTransformation === null || creditBalance < 1}
             onClick={onTransformHandler}
           >
             {isTransforming ? 'Transforming...' : 'Apply Transformation'}
@@ -304,7 +302,7 @@ const TransformationForm = ({ action, data = null, userId, type, creditBalance, 
           <Button
             type="submit"
             className="submit-button capitalize"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !image || !transformationConfig}
           >
             {isSubmitting ? 'Submitting...' : 'Save Image'}
           </Button>

@@ -62,10 +62,10 @@ export const plans = [
     name: "Free",
     icon: "/assets/icons/free-plan.svg",
     price: 0,
-    credits: 20,
+    credits: 10,
     inclusions: [
       {
-        label: "20 Free Credits",
+        label: "10 Free Credits",
         isIncluded: true,
       },
       {
@@ -192,7 +192,7 @@ export const transformationTypes = {
     type: "upscale",
     title: "Image Upscaling",
     subTitle: "Upscale and enhance image resolution",
-    config: { upscale: true },
+    config: { rawTransformations: ["e_upscale"] },
     icon: "scan.svg",
   },
 };

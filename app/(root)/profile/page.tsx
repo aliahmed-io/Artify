@@ -5,15 +5,15 @@ import { redirect } from "next/navigation";
 import { Collection } from "@/components/shared/Collection";
 import Header from "@/components/shared/Header";
 import { getUserImages } from "@/lib/actions/image.actions";
-import { getUserById } from "@/lib/actions/user.actions";
+import { getOrCreateUserByClerkId } from "@/lib/actions/user.actions";
 
-const Profile = async ({ searchParams }: SearchParamProps) => {
-  const page = Number(searchParams?.page) || 1;
+const Profile = async ({ searchParams }: { searchParams: Promise<{ page?: string }> }) => {
+  const page = Number((await searchParams)?.page) || 1;
   const { userId } = await auth(); // ✅ must await
 
   if (!userId) redirect("/sign-in");
 
-  const user = await getUserById(userId);
+  const user = await getOrCreateUserByClerkId(userId);
   const images = await getUserImages({ page, userId: user._id });
 
   return (

@@ -6,6 +6,7 @@ import { handleError } from "../utils";
 import User from "../database/models/user.model";
 import Image from "../database/models/image.model";
 import { redirect } from "next/navigation";
+import { auth } from '@clerk/nextjs/server';
 
 import { v2 as cloudinary } from "cloudinary";
 
@@ -92,7 +93,9 @@ export async function addImage({ image, userId, path }: AddImageParams) {
   try {
     await connectToDatabase();
 
-    const author = await User.findById(userId);
+    const { userId: clerkId } = await auth();
+    if (!clerkId) throw new Error('Unauthorized');
+    const author = await User.findOne({ _id: userId, clerkId });
 
     if (!author) {
       throw new Error("User not found");
@@ -116,6 +119,8 @@ export async function updateImage({ image, userId, path }: UpdateImageParams) {
   try {
     await connectToDatabase();
 
+    const { userId: clerkId } = await auth();
+    if (!clerkId || !(await User.exists({ _id: userId, clerkId }))) throw new Error('Unauthorized');
     const imageToUpdate = await Image.findById(image._id);
 
     if (!imageToUpdate || imageToUpdate.author.toHexString() !== userId) {
@@ -137,7 +142,11 @@ export async function deleteImage(imageId: string) {
   try {
     await connectToDatabase();
 
-    await Image.findByIdAndDelete(imageId);
+    const { userId: clerkId } = await auth();
+    if (!clerkId) throw new Error('Unauthorized');
+    const owner = await User.findOne({ clerkId });
+    if (!owner) throw new Error('Unauthorized');
+    await Image.findOneAndDelete({ _id: imageId, author: owner._id });
   } catch (error) {
     handleError(error);
   } finally {

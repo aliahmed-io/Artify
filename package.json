@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:selftest": "node scripts/db-selftest.mjs"
+    "db:selftest": "node scripts/db-selftest.mjs",
+    "test:smoke": "node scripts/artify-smoke.cjs"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.33.0",

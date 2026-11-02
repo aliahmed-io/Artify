@@ -11,7 +11,7 @@ import { DeleteConfirmation } from "@/components/shared/DeleteConfirmation";
 
 type SearchParamProps = {
   // params can be a promise in Next 15, so allow either
-  params: { id: string } | Promise<{ id: string }>;
+  params: Promise<{ id: string }>;
 };
 
 const ImageDetails = async ({ params }: SearchParamProps) => {

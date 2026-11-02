@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans } from "next/font/google";
-import { cn } from "@/lib/utils";
+
+
 import { ClerkProvider } from "@clerk/nextjs";
 
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const IBMPlex = IBM_Plex_Sans({
-  subsets: ["latin"],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-ibm-plex'
-});
+
 
 export const metadata: Metadata = {
   title: "Artify",
-  description: "AI-powered image generator",
+  description: "Your creative space for AI images, restoration, and private image editing.",
 };
 
 export default function RootLayout({
@@ -24,10 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider appearance={{
-      variables: { colorPrimary: '#624cf5' }
+      variables: { colorPrimary: '#7346ed' }
     }}>
       <html lang="en">
-        <body suppressHydrationWarning className={cn("font-IBMPlex antialiased", IBMPlex.variable)}>
+        <body suppressHydrationWarning className="font-IBMPlex antialiased">
           {children}
           <Toaster />
         </body>

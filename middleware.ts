@@ -5,6 +5,8 @@ import { NextResponse } from 'next/server';
 // optionally define which routes are public
 const isPublicRoute = createRouteMatcher([
   '/',
+  '/landingPage',
+  '/studio',
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/api/webhooks/clerk',
@@ -23,8 +25,10 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    '/((?!.+\\.[\\w]+$|_next).*)', 
-    '/', 
+    '/((?!.+\\.[\\w]+$|_next).*)',
+    '/',
+  '/landingPage',
+  '/studio',
     '/(api|trpc)(.*)'
   ],
 };

@@ -1,6 +1,7 @@
 import { Schema, model, models } from "mongoose";
 
 const UserSchema = new Schema({
+  fulfilledCheckouts: { type: [String], default: [] },
   clerkId: {
     type: String,
     required: true,
